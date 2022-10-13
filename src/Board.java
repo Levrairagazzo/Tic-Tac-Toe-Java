@@ -22,8 +22,8 @@ public class Board {
         }
     }
 
-    public void updateBoard(int row, int column){
-        myBoard[row][column] = 'X';
+    public void updateBoard(int row, int column, char symbol){
+        myBoard[row][column] = symbol;
 
     }
 

@@ -1,25 +1,59 @@
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class GameServer {
     public static int PORT = 7001;
+    InputStream inputStream = null;
+    OutputStream outputStream = null;
+    DataInputStream dataInputStream = null;
+    Board myBoard = null;
+    Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) throws Exception {
         new GameServer();
     }
 
     public GameServer() throws Exception{
+        myBoard = new Board();
         ServerSocket serverSocket = new ServerSocket(PORT);
         System.out.println("Server running on port " + GameServer.PORT);
-        Socket socket = serverSocket.accept(); //Waiting for the client to connect
+        System.out.println("Waiting for connection....");
+        Socket clientSocket = serverSocket.accept(); //Waiting for the client to connect
+        System.out.println("Connection from " + clientSocket + "!");
+        System.out.println("Initial Board: ");
+        myBoard.printBoard();
 
-        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-        ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
 
-        Game myGame = (Game) inputStream.readObject();
+        inputStream = clientSocket.getInputStream();
+        // create a DataInputStream so we can read data from it.
+        dataInputStream = new DataInputStream(inputStream);
 
+
+
+        // read the message from the socket
+        String message = "null";
+
+
+        for (int i = 0; i < 20; i++) {
+           clientTurn();
+           if(myBoard.didSomebodyWin())break;
+           serverTurn();
+           if(myBoard.didSomebodyWin())break;
+        }
+
+        System.out.println("Closing sockets.");
+        serverSocket.close();
+
+
+
+
+
+
+//        while(game.isStillGoing()){
+//
+//        }
 
 //        System.out.println(myGame.message);
 //        if(myGame.message.equals("Hello!")){
@@ -30,5 +64,29 @@ public class GameServer {
         serverSocket.close();
 
     }
+    public void clientTurn() throws IOException {
+        String message = "";
+        System.out.println("Choose a row: ");
+        message =  dataInputStream.readUTF();
+        int row = Integer.parseInt(message);
+        System.out.println("Choose a column: ");
+        message =  dataInputStream.readUTF();
+        int column = Integer.parseInt(message);
+        myBoard.updateBoard(row, column, 'X');
+        myBoard.printBoard();
+    }
+    public void serverTurn(){
+        System.out.println("This is the server's turn");
+        String message = "";
+        System.out.println("Choose a row: ");
+        message =  scanner.nextLine();
+        int row = Integer.parseInt(message);
+        System.out.println("Choose a column: ");
+        message = scanner.nextLine();
+        int column = Integer.parseInt(message);
+        myBoard.updateBoard(row, column, 'O');
+        myBoard.printBoard();
+    }
+
 
 }
