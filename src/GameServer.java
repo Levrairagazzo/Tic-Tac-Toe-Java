@@ -1,3 +1,5 @@
+import GUI.MyGrid;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,32 +18,23 @@ public class GameServer {
     }
 
     public GameServer() throws Exception{
-        myBoard = new Board();
         ServerSocket serverSocket = new ServerSocket(PORT);
         System.out.println("Server running on port " + GameServer.PORT);
         System.out.println("Waiting for connection....");
         Socket clientSocket = serverSocket.accept(); //Waiting for the client to connect
         System.out.println("Connection from " + clientSocket + "!");
-        System.out.println("Initial Board: ");
-        myBoard.printBoard();
 
 
-        inputStream = clientSocket.getInputStream();
+        // get the input stream from the connected socket
+        InputStream inputStream = clientSocket.getInputStream();
         // create a DataInputStream so we can read data from it.
-        dataInputStream = new DataInputStream(inputStream);
+        ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
+
+        MyGrid myGrid = (MyGrid) objectInputStream.readObject();
+        System.out.println("Starting game !");
+            myGrid.startGUI();
 
 
-
-        // read the message from the socket
-        String message = "null";
-
-
-        for (int i = 0; i < 20; i++) {
-           clientTurn();
-           if(myBoard.didSomebodyWin())break;
-           serverTurn();
-           if(myBoard.didSomebodyWin())break;
-        }
 
         System.out.println("Closing sockets.");
         serverSocket.close();
