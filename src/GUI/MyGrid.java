@@ -22,6 +22,12 @@ public class MyGrid extends JFrame {
     private String happy = "\uD83D\uDE00";
 
     public MyGrid() {
+
+
+
+    }
+
+    public void startGUI(){
         EventQueue.invokeLater(() ->
         {
 
@@ -43,8 +49,6 @@ public class MyGrid extends JFrame {
             add(secondPanel);
             pack();
         });
-
-
     }
 
     private void Start(){
