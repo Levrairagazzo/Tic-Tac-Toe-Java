@@ -206,7 +206,7 @@ public class MyGrid extends JFrame {
     }
 }
 
-class TicTacButton extends JButton {
+ class TicTacButton extends JButton {
     public static int IDs;
     int uniqueID;
 

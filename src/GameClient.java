@@ -1,49 +1,80 @@
-import java.io.DataOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import GUI.Player;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class GameClient {
-        public static void main(String[] args) throws Exception {
-            new GameClient();
-        }
+public class GameClient extends JFrame {
+    private final int WIDTH = 1000;
+    private final int HEIGHT = 600;
+    private OutputStream outStream;
+    private InputStream inStream;
+    Socket socket;
+    JPanel mainPanel;
+    JButton[] buttons;
+    JTextArea message;
 
-        public GameClient() throws Exception {
-//            Socket socket = new Socket("127.0.0.1", GameServer.PORT );
-//
-//            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-//            ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-//
-//            outputStream.close();
-//            socket.close();
-            Scanner myScan = new Scanner(System.in);
-            Socket socket = new Socket("localhost", 7001);
+
+    public static void main(String[] args) {
+        GameClient myClient = new GameClient();
+    }
+
+    public GameClient() {
+        connectToServer();
+        displayGUI();
+    }
+
+
+    private void displayGUI() {
+
+        setSize(WIDTH, HEIGHT);
+        setTitle("Sydney's Tic Tac Toe " + "\uD83D\uDE00");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+        setResizable(false);
+        setPreferredSize(new Dimension(WIDTH, HEIGHT));
+
+        mainPanel = new JPanel();
+        mainPanel.setLayout(new GridLayout(4, 3));
+        message = new JTextArea("this is the text area");
+        message.setEditable(false);
+
+        addButtons();
+        mainPanel.add(message);
+        add(mainPanel);
+        pack();
+
+    }
+
+    private void addButtons() {
+        buttons = new JButton[9];
+        for (int i = 0; i < 9; i++) {
+            buttons[i] = new JButton("i");
+            mainPanel.add(buttons[i]);
+
+        }
+    }
+
+
+    private void connectToServer() {
+        try {
+            socket = new Socket("localhost", GameServer.PORT);
             System.out.println("Connected!");
 
-            // get the output stream from the socket.
-            OutputStream outputStream = socket.getOutputStream();
-            // create a data output stream from the output stream so we can send data through it
-            DataOutputStream dataOutputStream = new DataOutputStream(outputStream);
-
-            System.out.println("What string would you like to send?");
-
-
-            // write the message we want to send
-            String message = "";
-            while(!message.equals("stop")){
-                message = myScan.nextLine();
-                dataOutputStream.writeUTF(message);
-                dataOutputStream.flush(); //sends the message
-            }
-
-            dataOutputStream.close(); // close the output stream when we're done.
+            outStream = socket.getOutputStream();
+            inStream = socket.getInputStream();
 
             System.out.println("Closing socket and terminating program.");
             socket.close();
+        } catch (IOException e) {
+            System.out.println("IO error on the client side !");
         }
 
     }
+
+
+}
 
 
