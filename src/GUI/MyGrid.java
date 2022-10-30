@@ -167,7 +167,6 @@ public class MyGrid extends JFrame {
 
     }
     private void displayWinCombinaison(TicTacButton b1, TicTacButton b2, TicTacButton b3){
-        System.out.println("Hello");
 
         paintButton(b1, Color.GREEN);
         paintButton(b2, Color.GREEN);
